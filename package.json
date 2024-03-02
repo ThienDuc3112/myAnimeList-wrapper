@@ -22,6 +22,8 @@
   "author": "thienduc",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^20.11.24",
+    "dotenv": "^16.4.5",
     "vitest": "^1.3.1"
   }
 }
