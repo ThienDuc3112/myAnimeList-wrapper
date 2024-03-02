@@ -1,5 +1,5 @@
 import { MalError } from "./util/Error";
-import { AllAnimeFields, Anime, AnimeFields } from "./interface/animeReturnType";
+import { AllAnimeDetailFields, AllAnimeFields, Anime, AnimeDetail, AnimeDetailFields, AnimeFields } from "./interface/animeRoute";
 import { buildURI } from "./util/UriBuilder";
 
 export class MAL {
@@ -11,14 +11,14 @@ export class MAL {
         this.accessToken = accessToken;
     }
 
-    public setAccessToken(token: string):void {
+    public setAccessToken(token: string): void {
         this.accessToken = token;
     }
 
-    public setClientId(id: string):void {
+    public setClientId(id: string): void {
         this.clientId = id;
     }
-    
+
     private static async get<T>(url: string, option: RequestInit): Promise<[T, undefined] | [undefined, MalError]> {
         try {
             const res = await fetch(url, option);
@@ -43,9 +43,9 @@ export class MAL {
         }
     }
 
-    public async getAnimeList(option: { q: string, limit?: number, offset?: number }): Promise<[Anime[], undefined] | [undefined, MalError]>
-    public async getAnimeList(option: { q: string, limit?: number, offset?: number, fields: AnimeFields[] }): Promise<[Partial<Anime>[], undefined] | [undefined, MalError]>
-    public async getAnimeList(option: { q: string, limit?: number, offset?: number, fields?: AnimeFields[] }): Promise<[Partial<Anime>[], undefined] | [undefined, MalError]> {
+    public async searchAnime(option: { q: string, limit?: number, offset?: number }): Promise<[Anime[], undefined] | [undefined, MalError]>
+    public async searchAnime(option: { q: string, limit?: number, offset?: number, fields: AnimeFields[] }): Promise<[(Partial<Anime> & Pick<Anime, "id" | "title">)[], undefined] | [undefined, MalError]>
+    public async searchAnime(option: { q: string, limit?: number, offset?: number, fields?: AnimeFields[] }): Promise<[(Partial<Anime> & Pick<Anime, "id" | "title">)[], undefined] | [undefined, MalError]> {
         const reqOption: RequestInit = this.accessToken ? {
             headers: {
                 Authorization: `Bearer ${this.accessToken}`
@@ -63,7 +63,7 @@ export class MAL {
             }
             return [undefined, err];
         } else {
-            const [data, err] = await MAL.get<{ data: { node: Partial<Anime> }[], paging: { previous?: string, next?: string } }>(`${uri}&fields=${option.fields.join(",")}`, reqOption);
+            const [data, err] = await MAL.get<{ data: { node: Partial<Anime> & Pick<Anime, "id" | "title"> }[], paging: { previous?: string, next?: string } }>(`${uri}&fields=${option.fields.join(",")}`, reqOption);
             if (err == undefined) {
                 return [data.data.map(anime => anime.node), undefined];
             }
@@ -71,4 +71,20 @@ export class MAL {
         }
     }
 
+    public async getAnimeDetail(option: { animeId: number }): Promise<[AnimeDetail, undefined] | [undefined, MalError]>
+    public async getAnimeDetail(option: { animeId: number, fields: AnimeDetailFields[] }): Promise<[Partial<AnimeDetail> & Pick<AnimeDetail, "id" | "title">, undefined] | [undefined, MalError]>
+    public async getAnimeDetail({ animeId, fields }: { animeId: number, fields?: AnimeDetailFields[] }): Promise<[Partial<AnimeDetail> & Pick<AnimeDetail, "id" | "title">, undefined] | [undefined, | MalError]> {
+        const reqOption: RequestInit = this.accessToken ? {
+            headers: {
+                Authorization: `Bearer ${this.accessToken}`
+            }
+        } : {
+            headers: {
+                "X-MAL-CLIENT-ID": this.clientId
+            }
+        }
+        const uri = `${this.url}/anime/${animeId}`;
+        if (!fields) return await MAL.get<AnimeDetail>(uri + "?fields=" + AllAnimeDetailFields.join(","), reqOption);
+        return await MAL.get<Partial<AnimeDetail> & Pick<AnimeDetail, "id" | "title">>(uri + "?fields=" + fields.join(","), reqOption);
+    }
 }

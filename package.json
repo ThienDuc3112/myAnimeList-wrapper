@@ -10,8 +10,15 @@
     "myanimelist",
     "mal",
     "wrapper",
-    "api"
+    "api",
+    "anime",
+    "manga",
+    "typescript"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThienDuc3112/myAnimeList-wrapper"
+  },
   "author": "thienduc",
   "license": "ISC",
   "devDependencies": {
