@@ -6,15 +6,29 @@ export class MAL {
     private accessToken: string | undefined;
     private clientId: string;
     private url = "https://api.myanimelist.net/v2";
+
+    /**
+        * Creates an instance of MAL API wrapper.
+        * @param {string} clientId - The client ID required for accessing the API.
+        * @param {string} [accessToken] - The access token (optional).
+    */
     constructor(clientId: string, accessToken?: string) {
         this.clientId = clientId;
         this.accessToken = accessToken;
     }
 
+    /**
+        * Sets the access token for the API requests.
+        * @param {string} token - The access token to set.
+    */
     public setAccessToken(token: string): void {
         this.accessToken = token;
     }
 
+    /**
+        * Sets the client ID for the API requests.
+        * @param {string} id - The client ID to set.
+    */
     public setClientId(id: string): void {
         this.clientId = id;
     }
@@ -43,7 +57,24 @@ export class MAL {
         }
     }
 
+    /**
+        * Asynchronous method for searching anime.
+        * @param {Object} option - Search options.
+        * @param {string} option.q - The search term.
+        * @param {number} [option.limit] - Limit on the number of anime to be returned (maximum 100).
+        * @param {number} [option.offset] - Offset for pagination.
+        * @returns {Promise<[Anime[], undefined] | [undefined, MalError]>} A promise resolving to an array containing anime data or an error.
+    */
     public async searchAnime(option: { q: string, limit?: number, offset?: number }): Promise<[Anime[], undefined] | [undefined, MalError]>
+    /**
+        * Asynchronous method for searching anime with specific fields.
+        * @param {Object} option - Search options.
+        * @param {string} option.q - The search term.
+        * @param {number} [option.limit] - Limit on the number of anime to be returned (maximum 100).
+        * @param {number} [option.offset] - Offset for pagination.
+        * @param {AnimeFields[]} option.fields - The fields to include in the returned data.
+        * @returns {Promise<[(Partial<Anime> & Pick<Anime, "id" | "title">)[], undefined] | [undefined, MalError]>} A promise resolving to an array containing partial anime data or an error.
+    */
     public async searchAnime(option: { q: string, limit?: number, offset?: number, fields: AnimeFields[] }): Promise<[(Partial<Anime> & Pick<Anime, "id" | "title">)[], undefined] | [undefined, MalError]>
     public async searchAnime(option: { q: string, limit?: number, offset?: number, fields?: AnimeFields[] }): Promise<[(Partial<Anime> & Pick<Anime, "id" | "title">)[], undefined] | [undefined, MalError]> {
         const reqOption: RequestInit = this.accessToken ? {
@@ -71,7 +102,20 @@ export class MAL {
         }
     }
 
+    /**
+        * Asynchronous method for retrieving anime details.
+        * @param {Object} option - Options for retrieving anime details.
+        * @param {number} option.animeId - The ID of the anime.
+        * @returns {Promise<[AnimeDetail, undefined] | [undefined, MalError]>} A promise resolving to anime details or an error.
+    */
     public async getAnimeDetail(option: { animeId: number }): Promise<[AnimeDetail, undefined] | [undefined, MalError]>
+    /**
+        * Asynchronous method for retrieving anime details with specific fields.
+        * @param {Object} option - Options for retrieving anime details.
+        * @param {number} option.animeId - The ID of the anime.
+        * @param {AnimeDetailFields[]} option.fields - The fields to include in the returned data.
+        * @returns {Promise<[Partial<AnimeDetail> & Pick<AnimeDetail, "id" | "title">, undefined] | [undefined, MalError]>} A promise resolving to partial anime details or an error.
+    */
     public async getAnimeDetail(option: { animeId: number, fields: AnimeDetailFields[] }): Promise<[Partial<AnimeDetail> & Pick<AnimeDetail, "id" | "title">, undefined] | [undefined, MalError]>
     public async getAnimeDetail({ animeId, fields }: { animeId: number, fields?: AnimeDetailFields[] }): Promise<[Partial<AnimeDetail> & Pick<AnimeDetail, "id" | "title">, undefined] | [undefined, | MalError]> {
         const reqOption: RequestInit = this.accessToken ? {
