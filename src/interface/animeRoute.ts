@@ -49,7 +49,7 @@ interface listStatus {
   updated_at: string;
 }
 
-type quarter = "winter" | "spring" | "summer" | "fall";
+export type quarter = "winter" | "spring" | "summer" | "fall";
 
 interface season {
   year: number;
@@ -258,3 +258,11 @@ export type rankingType =
   | "special"
   | "bypopularity"
   | "favorite";
+
+export interface _MALstandardListResponse<T> {
+    data: T[]
+    paging: {
+        next?: string
+        previous?: string
+    }
+}
