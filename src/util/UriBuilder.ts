@@ -1,4 +1,4 @@
-export const buildURI = (url: string, params: Record<string, any>) => {
+export const _buildURI = (url: string, params: Record<string, any>) => {
   const urlObject = new URL(url);
   const searchParams = new URLSearchParams(urlObject.search);
 
